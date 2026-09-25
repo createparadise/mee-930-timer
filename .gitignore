@@ -1,0 +1,18 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# secrets — never commit
+.env
+.env.*
+*.pem
+*credentials*
+*service-account*
+.netlify/
+
+# logs / junk
+*.log
+node_modules/

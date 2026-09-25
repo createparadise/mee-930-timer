@@ -1,0 +1,41 @@
+{
+  "name": "mee-930-timer",
+  "version": "1.0.0",
+  "description": "Open-core MEE 9:30 browser timer (1:00 + 3\u00d72:30 + 1:00) by Maxim Lagoshin \u00b7 Create Paradise Now",
+  "author": "Maxim Lagoshin <lagoshin@gmail.com> (https://createparadise.now/)",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "mee",
+    "9:30",
+    "glut4",
+    "biohacking",
+    "pwa",
+    "timer",
+    "mechanical-tension",
+    "createparadise"
+  ],
+  "homepage": "https://createparadise.now/app.html",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/createparadise/mee-930-timer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/createparadise/mee-930-timer/issues"
+  },
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "serve": "python3 -m http.server 8080"
+  },
+  "files": [
+    "mee-930-timer.html",
+    "index.html",
+    "sw.js",
+    "manifest.webmanifest",
+    "LICENSE",
+    "README.md",
+    "CITATION.cff",
+    "OPEN_CORE_BOUNDARY.md",
+    "GITHUB_PUBLISH_CHECKLIST.md"
+  ]
+}

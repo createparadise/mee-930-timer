@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+title: "MEE 9:30 Timer (open-core)"
+message: "If you use this software, please cite it using these metadata."
+type: software
+authors:
+  - family-names: Lagoshin
+    given-names: Maxim
+    affiliation: "Create Paradise Now"
+    email: lagoshin@gmail.com
+repository-code: "https://github.com/createparadise/mee-930-timer"
+url: "https://createparadise.now/app.html"
+abstract: >-
+  Standalone browser timer implementing the Minimum Effective Effort (MEE)
+  9:30 session structure (1:00 dynamic priming + three 2:30 mechanical-tension
+  rounds + 1:00 fascial unload). Open-core MIT extract accompanying the
+  Create Paradise Now educational protocol on dense mechanical tension and
+  insulin-independent GLUT4 framing.
+keywords:
+  - Minimum Effective Effort
+  - MEE 9:30
+  - GLUT4
+  - biohacking
+  - PWA
+  - timer
+  - mechanical tension
+  - Create Paradise Now
+license: MIT
+version: "1.0.0"
+date-released: "2026-09-25"
+identifiers:
+  - type: url
+    value: "https://createparadise.now/app.html"
+    description: "Canonical live product / PWA surface"
+  - type: url
+    value: "https://createparadise.now/course.html"
+    description: "Related commercial course"
+  - type: doi
+    value: "10.5281/zenodo.XXXXXXX"
+    description: "Placeholder — replace after Zenodo preprint DOI is minted"
+references:
+  - type: website
+    title: "Create Paradise Now"
+    url: "https://createparadise.now/"
+  - type: website
+    title: "MEE 9:30 GLUT4 preprint (Zenodo pending)"
+    url: "https://createparadise.now/llms-full.txt"

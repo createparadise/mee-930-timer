@@ -1,0 +1,23 @@
+{
+  "name": "MEE 9:30 Timer",
+  "short_name": "MEE 9:30",
+  "description": "Minimum Effective Effort 9:30 mechanical-tension timer by Maxim Lagoshin",
+  "start_url": "./mee-930-timer.html",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#D2452C",
+  "lang": "en",
+  "categories": [
+    "health",
+    "fitness",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%23D2452C'/%3E%3Ctext x='64' y='78' text-anchor='middle' font-family='system-ui,sans-serif' font-size='42' font-weight='700' fill='white'%3E9:30%3C/text%3E%3C/svg%3E",
+      "sizes": "128x128",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

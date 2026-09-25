@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#D2452C">
+  <meta name="color-scheme" content="light">
+  <title>MEE 9:30 Timer · Maxim Lagoshin · Create Paradise Now</title>
+  <meta name="description" content="Open-core Minimum Effective Effort timer: 1:00 priming + 3×2:30 mechanical rounds + 1:00 fascial unload. By Maxim Lagoshin.">
+  <meta name="author" content="Maxim Lagoshin">
+  <link rel="canonical" href="https://createparadise.now/app.html">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="MEE 9:30">
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --paper: #FCF9F2;
+      --ink: #191207;
+      --body: #382E22;
+      --muted: #6E6152;
+      --line: #E7DDCB;
+      --gold: #B9883E;
+      --hibiscus: #D2452C;
+      --sage: #7E9463;
+      --choco: #2C2018;
+      --mono: ui-monospace, "IBM Plex Mono", Menlo, monospace;
+      --sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --ease: cubic-bezier(.22, .72, 0, 1);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      color: var(--body);
+      background: radial-gradient(120% 90% at 50% 0%, #FFFDF7 0%, var(--bg) 70%);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    .shell { width: min(100% - 32px, 480px); margin: 0 auto; padding: 28px 0 48px; }
+    header { text-align: center; margin-bottom: 28px; }
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--hibiscus);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: clamp(28px, 7vw, 36px);
+      font-weight: 750;
+      letter-spacing: -.03em;
+    }
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.5;
+    }
+    .card {
+      border: 1.5px solid var(--line);
+      border-radius: 28px;
+      background: #fff;
+      box-shadow: 0 24px 64px -38px rgba(34,26,17,.55);
+      padding: 28px 22px 24px;
+      text-align: center;
+    }
+    .phase-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .phase-name {
+      margin: 0 0 18px;
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    .ring-wrap {
+      position: relative;
+      width: 220px; height: 220px;
+      margin: 0 auto 18px;
+    }
+    .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: var(--line); stroke-width: 10; }
+    .ring-fg {
+      fill: none; stroke: var(--hibiscus); stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 628.32;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset .2s linear;
+    }
+    .ring-fg.is-rest { stroke: var(--sage); }
+    .clock {
+      position: absolute; inset: 0;
+      display: grid; place-items: center;
+      font-family: var(--mono);
+      font-size: 44px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -.04em;
+    }
+    .session {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+      margin-bottom: 18px;
+    }
+    button {
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      font: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform .15s var(--ease), background .15s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    button.primary {
+      background: var(--hibiscus);
+      border-color: var(--hibiscus);
+      color: #fff;
+      box-shadow: 0 14px 28px -18px rgba(210,69,44,.85);
+    }
+    button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+    .phases {
+      list-style: none; margin: 0; padding: 0;
+      display: grid; gap: 6px; text-align: left;
+    }
+    .phases li {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .phases li.active {
+      border-color: var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .phases li.done { color: var(--sage); }
+    .phases .dur { font-family: var(--mono); font-size: 11px; }
+    footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    footer a { color: var(--choco); font-weight: 600; }
+    .note {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--gold);
+      background: var(--paper);
+      border-radius: 0 12px 12px 0;
+      font-size: 12.5px;
+      color: var(--body);
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <span class="eyebrow">Minimum Effective Effort</span>
+      <h1>MEE 9:30 Timer</h1>
+      <p class="sub">Open-core scaffold · 1:00 + 3×2:30 + 1:00<br>Maxim Lagoshin · Create Paradise Now</p>
+    </header>
+
+    <div class="card" role="region" aria-label="MEE 9:30 session timer">
+      <div class="phase-label" id="phaseIndex">Phase 1 / 5</div>
+      <h2 class="phase-name" id="phaseName">Dynamic priming</h2>
+
+      <div class="ring-wrap" aria-hidden="true">
+        <svg viewBox="0 0 220 220">
+          <circle class="ring-bg" cx="110" cy="110" r="100"></circle>
+          <circle class="ring-fg" id="ringFg" cx="110" cy="110" r="100"></circle>
+        </svg>
+        <div class="clock" id="clock" aria-live="polite">1:00</div>
+      </div>
+
+      <div class="session" id="sessionLeft">Session left · 9:30</div>
+
+      <div class="controls">
+        <button type="button" class="primary" id="btnStart">Start</button>
+        <button type="button" id="btnPause" disabled>Pause</button>
+        <button type="button" id="btnReset">Reset</button>
+      </div>
+
+      <ol class="phases" id="phaseList"></ol>
+
+      <p class="note">Educational timer only — not medical advice. Dense contractile work is associated with contraction-stimulated glucose uptake (GLUT4) in skeletal muscle; this software does not diagnose or treat disease.</p>
+    </div>
+
+    <footer>
+      <p>
+        Protocol &amp; course:
+        <a href="https://createparadise.now/course.html" rel="noopener">createparadise.now/course.html</a>
+        · Live product surface:
+        <a href="https://createparadise.now/app.html" rel="noopener">app.html</a>
+      </p>
+      <p>MIT © 2026 Maxim Lagoshin · <a href="https://createparadise.now/" rel="noopener">Create Paradise Now</a></p>
+    </footer>
+  </div>
+
+  <script>
+  (() => {
+    'use strict';
+
+    const CIRC = 2 * Math.PI * 100; // r=100
+
+    const PHASES = [
+      { id: 'prime',  name: 'Dynamic priming', hint: 'Synovial prep · shadow boxing · pogo · joint circles', seconds: 60,  rest: false },
+      { id: 'r1',     name: 'Round 1',         hint: 'High density — back/shoulders or legs',               seconds: 150, rest: false },
+      { id: 'r2',     name: 'Round 2',         hint: 'High density — chest/triceps or core',                seconds: 150, rest: false },
+      { id: 'r3',     name: 'Round 3',         hint: 'High density — biceps, core, or legs',                seconds: 150, rest: false },
+      { id: 'fascial',name: 'Fascial unload',  hint: 'Spine decompression · openers · parasympathetic',    seconds: 60,  rest: true  }
+    ];
+
+    const TOTAL = PHASES.reduce((s, p) => s + p.seconds, 0); // 570
+
+    const el = {
+      phaseIndex: document.getElementById('phaseIndex'),
+      phaseName: document.getElementById('phaseName'),
+      clock: document.getElementById('clock'),
+      sessionLeft: document.getElementById('sessionLeft'),
+      ring: document.getElementById('ringFg'),
+      list: document.getElementById('phaseList'),
+      start: document.getElementById('btnStart'),
+      pause: document.getElementById('btnPause'),
+      reset: document.getElementById('btnReset')
+    };
+
+    el.ring.style.strokeDasharray = String(CIRC);
+
+    let phase = 0;
+    let remaining = PHASES[0].seconds;
+    let running = false;
+    let raf = 0;
+    let lastTs = 0;
+    let audioCtx = null;
+
+    function fmt(sec) {
+      const s = Math.max(0, Math.ceil(sec));
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return m + ':' + String(r).padStart(2, '0');
+    }
+
+    function sessionRemaining() {
+      let left = remaining;
+      for (let i = phase + 1; i < PHASES.length; i++) left += PHASES[i].seconds;
+      return left;
+    }
+
+    function beep(freq, dur) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = freq;
+        g.gain.value = 0.04;
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start();
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+        o.stop(audioCtx.currentTime + dur);
+      } catch (_) { /* silent if blocked */ }
+    }
+
+    function renderList() {
+      el.list.innerHTML = PHASES.map((p, i) => {
+        const cls = i < phase ? 'done' : (i === phase ? 'active' : '');
+        return '<li class="' + cls + '"><span>' + p.name + '</span><span class="dur">' + fmt(p.seconds) + '</span></li>';
+      }).join('');
+    }
+
+    function paint() {
+      const p = PHASES[phase];
+      el.phaseIndex.textContent = 'Phase ' + (phase + 1) + ' / ' + PHASES.length;
+      el.phaseName.textContent = p.name;
+      el.clock.textContent = fmt(remaining);
+      el.sessionLeft.textContent = 'Session left · ' + fmt(sessionRemaining());
+      const progress = 1 - (remaining / p.seconds);
+      el.ring.style.strokeDashoffset = String(CIRC * (1 - progress));
+      el.ring.classList.toggle('is-rest', !!p.rest);
+      renderList();
+    }
+
+    function advance() {
+      beep(phase === PHASES.length - 1 ? 660 : 520, 0.18);
+      if (phase >= PHASES.length - 1) {
+        running = false;
+        el.start.disabled = true;
+        el.pause.disabled = true;
+        el.start.textContent = 'Complete';
+        remaining = 0;
+        paint();
+        return;
+      }
+      phase += 1;
+      remaining = PHASES[phase].seconds;
+      paint();
+    }
+
+    function tick(ts) {
+      if (!running) return;
+      if (!lastTs) lastTs = ts;
+      const dt = (ts - lastTs) / 1000;
+      lastTs = ts;
+      remaining -= dt;
+      if (remaining <= 0) {
+        remaining = 0;
+        paint();
+        advance();
+        if (running) {
+          lastTs = 0;
+          raf = requestAnimationFrame(tick);
+        }
+        return;
+      }
+      paint();
+      raf = requestAnimationFrame(tick);
+    }
+
+    function start() {
+      if (phase >= PHASES.length) return;
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      running = true;
+      lastTs = 0;
+      el.start.disabled = true;
+      el.pause.disabled = false;
+      el.start.textContent = 'Running';
+      beep(440, 0.12);
+      raf = requestAnimationFrame(tick);
+    }
+
+    function pause() {
+      running = false;
+      cancelAnimationFrame(raf);
+      el.start.disabled = false;
+      el.pause.disabled = true;
+      el.start.textContent = 'Resume';
+      paint();
+    }
+
+    function reset() {
+      running = false;
+      cancelAnimationFrame(raf);
+      phase = 0;
+      remaining = PHASES[0].seconds;
+      el.start.disabled = false;
+      el.pause.disabled = true;
+      el.start.textContent = 'Start';
+      paint();
+    }
+
+    el.start.addEventListener('click', start);
+    el.pause.addEventListener('click', pause);
+    el.reset.addEventListener('click', reset);
+
+    // Keyboard: Space start/pause, R reset
+    window.addEventListener('keydown', (e) => {
+      if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (running) pause(); else start();
+      } else if (e.key === 'r' || e.key === 'R') {
+        reset();
+      }
+    });
+
+    paint();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  })();
+  </script>
+</body>
+</html>
