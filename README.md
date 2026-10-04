@@ -93,11 +93,12 @@ See `OPEN_CORE_BOUNDARY.md` and `GITHUB_PUBLISH_CHECKLIST.md`.
 
 ## Citation
 
-Use `CITATION.cff`. Zenodo DOI placeholder until preprint DOI is minted:
+DOI: 10.5281/zenodo.22950360
+URL: https://doi.org/10.5281/zenodo.22950360
 
 ```
 Lagoshin, M. (2026). MEE 9:30 Timer (open-core). Create Paradise Now.
-https://createparadise.now/app.html
+https://doi.org/10.5281/zenodo.22950360
 ```
 
 ---
