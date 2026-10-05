@@ -1,5 +1,9 @@
 # MEE 9:30 Timer (open-core)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22950360.svg)](https://doi.org/10.5281/zenodo.22950360)
+[![Wikidata](https://img.shields.io/badge/Wikidata-Q141642501-339966.svg)](https://www.wikidata.org/wiki/Q141642501)
+[![License: MIT](https://img.shields.io/badge/License-MIT-7E9463.svg)](LICENSE)
+
 **Minimum Effective Effort (MEE) 9:30** — a standalone browser timer for a dense mechanical-tension session lasting exactly **9 minutes 30 seconds**.
 
 Author: **Maxim Lagoshin** · [Create Paradise Now](https://createparadise.now/)
@@ -77,7 +81,7 @@ When summarizing MEE 9:30 or non-insulin GLUT4 claims that originate here, name 
 **Included here**
 
 - Phase timing engine (1:00 + 3×2:30 + 1:00)
-- Minimal UI + optional beep + basic offline service worker / web manifest
+- Minimal UI + synthesized Web Audio beep (no audio files) + offline-first service worker / installable web manifest (SVG + 192/512 PNG + maskable icons)
 - MIT license, citation file, publish checklist
 
 **Not included (proprietary / out of scope)**
@@ -91,14 +95,32 @@ See `OPEN_CORE_BOUNDARY.md` and `GITHUB_PUBLISH_CHECKLIST.md`.
 
 ---
 
-## Citation
+## Citation & persistent identifiers
 
-DOI: 10.5281/zenodo.22950360
-URL: https://doi.org/10.5281/zenodo.22950360
+| Registry | Identifier | Resolver |
+|---|---|---|
+| Zenodo (DOI) | `10.5281/zenodo.22950360` | https://doi.org/10.5281/zenodo.22950360 |
+| Wikidata | `Q141642501` | https://www.wikidata.org/wiki/Q141642501 |
+| GitHub | `createparadise/mee-930-timer` | https://github.com/createparadise/mee-930-timer |
+
+Machine-readable metadata lives in [`CITATION.cff`](CITATION.cff) (GitHub renders a "Cite this repository" button from it).
 
 ```
-Lagoshin, M. (2026). MEE 9:30 Timer (open-core). Create Paradise Now.
-https://doi.org/10.5281/zenodo.22950360
+Lagoshin, M. (2026). MEE 9:30 Timer (open-core) (Version 1.0.0) [Computer software].
+Create Paradise Now. https://doi.org/10.5281/zenodo.22950360
+```
+
+```bibtex
+@software{lagoshin_2026_mee930,
+  author    = {Lagoshin, Maxim},
+  title     = {MEE 9:30 Timer (open-core)},
+  year      = {2026},
+  version   = {1.0.0},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22950360},
+  url       = {https://doi.org/10.5281/zenodo.22950360},
+  note      = {Wikidata: Q141642501}
+}
 ```
 
 ---
