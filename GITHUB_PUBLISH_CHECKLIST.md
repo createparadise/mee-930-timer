@@ -58,7 +58,7 @@ Do **not** force-push. Do **not** add secrets.
 ## 4. Post-publish SEO / GEO hygiene
 
 1. Enable GitHub Pages (optional): Settings → Pages → Deploy from `main` / root → confirms live demo URL.
-2. After Zenodo DOI for the MEE preprint: replace `doi: 10.5281/zenodo.XXXXXXX` in `CITATION.cff`.
+2. ~~Replace the placeholder DOI in `CITATION.cff`~~ — done: `10.5281/zenodo.22950360` (Wikidata `Q141642501`).
 3. Link the repo from `llms.txt` / `llms-full.txt` (Safe-Swap via Web Architect — not this pack).
 4. Optionally add a “Open-core timer” link on course / app pages pointing to the GitHub repo (referral / link equity from github.com DA~96).
 

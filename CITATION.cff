@@ -25,6 +25,7 @@ keywords:
   - mechanical tension
   - Create Paradise Now
 license: MIT
+doi: "10.5281/zenodo.22950360"
 version: "1.0.0"
 date-released: "2026-09-25"
 identifiers:
@@ -35,12 +36,15 @@ identifiers:
     value: "https://createparadise.now/course.html"
     description: "Related commercial course"
   - type: doi
-    value: "10.5281/zenodo.XXXXXXX"
-    description: "Placeholder — replace after Zenodo preprint DOI is minted"
+    value: "10.5281/zenodo.22950360"
+    description: "Zenodo archive"
+  - type: url
+    value: "https://www.wikidata.org/wiki/Q141642501"
+    description: "Wikidata entity"
 references:
   - type: website
     title: "Create Paradise Now"
     url: "https://createparadise.now/"
   - type: website
-    title: "MEE 9:30 GLUT4 preprint (Zenodo pending)"
+    title: "MEE 9:30 GLUT4 preprint"
     url: "https://createparadise.now/llms-full.txt"

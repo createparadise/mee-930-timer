@@ -32,6 +32,7 @@
     "index.html",
     "sw.js",
     "manifest.webmanifest",
+    "icons/",
     "LICENSE",
     "README.md",
     "CITATION.cff",
