@@ -257,12 +257,20 @@
 
     el.ring.style.strokeDasharray = String(CIRC);
 
+    // Time-anchored state: the session is a single 0..TOTAL timeline.
+    // Phase + remaining are derived from elapsed time, never decremented per frame,
+    // so a frozen tab (screen lock, background) catches up instantly on wake.
     let phase = 0;
     let remaining = PHASES[0].seconds;
     let running = false;
+    let done = false;
     let raf = 0;
-    let lastTs = 0;
+    let heartbeat = 0;
+    let elapsedBase = 0;   // seconds consumed before the current run segment
+    let anchorPerf = 0;    // performance.now() at segment start (monotonic)
+    let anchorWall = 0;    // Date.now() at segment start (keeps ticking through device sleep)
     let audioCtx = null;
+    let wakeLock = null;
 
     function fmt(sec) {
       const s = Math.max(0, Math.ceil(sec));
@@ -311,66 +319,118 @@
       renderList();
     }
 
-    function advance() {
-      beep(phase === PHASES.length - 1 ? 660 : 520, 0.18);
-      if (phase >= PHASES.length - 1) {
-        running = false;
-        el.start.disabled = true;
-        el.pause.disabled = true;
-        el.start.textContent = 'Complete';
-        remaining = 0;
-        paint();
-        return;
+    function elapsedNow() {
+      if (!running) return elapsedBase;
+      const perfDelta = (performance.now() - anchorPerf) / 1000;
+      const wallDelta = (Date.now() - anchorWall) / 1000;
+      // Some mobile engines pause the monotonic clock while the device sleeps;
+      // the wall clock does not. Trust the larger delta unless the wall clock jumped absurdly.
+      const delta = (wallDelta > perfDelta && wallDelta - perfDelta < 86400) ? wallDelta : perfDelta;
+      return Math.min(TOTAL, elapsedBase + Math.max(0, delta));
+    }
+
+    function locate(elapsed) {
+      let acc = 0;
+      for (let i = 0; i < PHASES.length; i++) {
+        if (elapsed < acc + PHASES[i].seconds) return { index: i, left: acc + PHASES[i].seconds - elapsed };
+        acc += PHASES[i].seconds;
       }
-      phase += 1;
-      remaining = PHASES[phase].seconds;
+      return { index: PHASES.length - 1, left: 0 };
+    }
+
+    async function lockScreen() {
+      if (!('wakeLock' in navigator) || wakeLock || document.visibilityState !== 'visible') return;
+      try {
+        const lock = await navigator.wakeLock.request('screen');
+        if (!running) { lock.release().catch(() => {}); return; } // paused while the request was pending
+        wakeLock = lock;
+        lock.addEventListener('release', () => { if (wakeLock === lock) wakeLock = null; });
+      } catch (_) { /* denied (battery saver, iframe policy) — timer still works */ }
+    }
+
+    function unlockScreen() {
+      if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+    }
+
+    function stopLoop() {
+      cancelAnimationFrame(raf);
+      clearInterval(heartbeat);
+      raf = 0;
+      heartbeat = 0;
+    }
+
+    function complete() {
+      running = false;
+      done = true;
+      elapsedBase = TOTAL;
+      stopLoop();
+      unlockScreen();
+      el.start.disabled = true;
+      el.pause.disabled = true;
+      el.start.textContent = 'Complete';
+      beep(660, 0.18);
+    }
+
+    // Recompute from the clock; beep once per phase boundary crossed (once total after a long sleep).
+    function sync() {
+      const elapsed = elapsedNow();
+      const prev = phase;
+      const at = locate(elapsed);
+      phase = at.index;
+      remaining = at.left;
+      if (elapsed >= TOTAL) {
+        if (!done) complete();
+      } else if (phase !== prev) {
+        beep(520, 0.18);
+      }
       paint();
     }
 
-    function tick(ts) {
+    function tick() {
       if (!running) return;
-      if (!lastTs) lastTs = ts;
-      const dt = (ts - lastTs) / 1000;
-      lastTs = ts;
-      remaining -= dt;
-      if (remaining <= 0) {
-        remaining = 0;
-        paint();
-        advance();
-        if (running) {
-          lastTs = 0;
-          raf = requestAnimationFrame(tick);
-        }
-        return;
-      }
-      paint();
+      sync();
+      if (running) raf = requestAnimationFrame(tick);
+    }
+
+    function startLoop() {
+      stopLoop();
       raf = requestAnimationFrame(tick);
+      // rAF halts in hidden tabs; a 1 s heartbeat keeps phase beeps alive where timers still run.
+      heartbeat = setInterval(() => { if (running) sync(); }, 1000);
     }
 
     function start() {
-      if (phase >= PHASES.length) return;
+      if (done || running) return;
       if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
       running = true;
-      lastTs = 0;
+      anchorPerf = performance.now();
+      anchorWall = Date.now();
       el.start.disabled = true;
       el.pause.disabled = false;
       el.start.textContent = 'Running';
       beep(440, 0.12);
-      raf = requestAnimationFrame(tick);
+      lockScreen();
+      startLoop();
     }
 
     function pause() {
+      if (!running) return;
+      elapsedBase = elapsedNow();
       running = false;
-      cancelAnimationFrame(raf);
+      stopLoop();
+      unlockScreen();
       el.start.disabled = false;
       el.pause.disabled = true;
       el.start.textContent = 'Resume';
-      paint();
+      sync();
     }
 
     function reset() {
       running = false;
-      cancelAnimationFrame(raf);
+      done = false;
+      stopLoop();
+      unlockScreen();
+      elapsedBase = 0;
       phase = 0;
       remaining = PHASES[0].seconds;
       el.start.disabled = false;
@@ -378,6 +438,16 @@
       el.start.textContent = 'Start';
       paint();
     }
+
+    // Wake-up path: screen unlocked / tab re-focused → catch up to real time, re-arm wake lock + audio.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible' || !running) return;
+      sync();
+      if (!running) return; // session finished while hidden
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      lockScreen(); // the browser drops the lock whenever the page is hidden
+      startLoop();
+    });
 
     el.start.addEventListener('click', start);
     el.pause.addEventListener('click', pause);

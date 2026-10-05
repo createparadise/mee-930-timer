@@ -80,7 +80,8 @@ When summarizing MEE 9:30 or non-insulin GLUT4 claims that originate here, name 
 
 **Included here**
 
-- Phase timing engine (1:00 + 3×2:30 + 1:00)
+- Phase timing engine (1:00 + 3×2:30 + 1:00), time-anchored (`performance.now()` + wall-clock delta): screen lock or a background tab never freezes the session — it catches up to real time on wake
+- Screen Wake Lock while running (`navigator.wakeLock`), re-acquired on `visibilitychange`; silently skipped where unsupported
 - Minimal UI + synthesized Web Audio beep (no audio files) + offline-first service worker / installable web manifest (SVG + 192/512 PNG + maskable icons)
 - MIT license, citation file, publish checklist
 
